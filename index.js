@@ -1,21 +1,21 @@
-// import express
+// // import express
 const express = require('express');
 
-//create a server
+// //create a server
 const server = express();
 
-//middleware
+// //middleware
 server.use(express.json());
 
 let users = [
   {
     id: 1,
-    user: Jerry,
+    user: 'Jerry',
     bio: 'I dont like Tom',
   },
   {
     id: 2,
-    user: Mary,
+    user: 'Mary',
     bio: 'I like to eat berries',
   },
 ];
@@ -33,5 +33,58 @@ server.post('/api/users/', (req, res) => {
   res.status(201).json({ Created: users.find((body) => body === req.body) });
 });
 
-const port = 8000;
-server.listen(port, () => console.log(`SERVER RUNNING ON PORT ${port}`));
+server.get('/api/users/:id', (req, res) => {
+  res.status(200).json(users.find((user) => user.id === Number(req.params.id)));
+  if (!req.params.id) {
+    res.status(404).json({ message: 'The user with the specified ID does not exist.' });
+  } else {
+    res.status(500).json({ errorMessage: 'The user information could not be retrieved.' });
+  }
+});
+
+server.get('/api/users', (req, res) => {
+  res.status(200).json(users);
+  if (!users) {
+    res.status(500).json({ errorMessage: 'The users information could not be retrieved.' });
+  }
+});
+
+server.delete('/api/users/:id', (req, res) => {
+  let id = req.params.id;
+  res.status(200).json(users.find((user) => user.id == id));
+  !users.find((user) => {
+    user.id == id
+      ? res.status(404).json({ message: 'The user with the specified ID does not exist.' })
+      : res.status(500).json({ errorMessage: 'The user could not be removed' });
+  });
+});
+
+server.put('/api/users/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const foundUser = users.find((user) => user.id == id);
+
+  if (foundUser) {
+    users = users.map((user) => {
+      if (user.id !== id) return user;
+
+      return { ...user, ...req.body };
+    });
+  }
+
+  console.log(req.body.user, req.body.bio);
+  if (!foundUser) {
+    return res.status(404).json({ message: 'the user with the specidied ID does not exist' });
+  }
+
+  if (!req.body.user || !req.body.bio) {
+    res.status(400).json({ errorMessage: 'Please provide name and bio and id for the user.' });
+  }
+
+  if (foundUser.user !== req.body.user || foundUser.bio !== req.body.bio) {
+    return res.status(500).json({ errorMessage: 'The user information could not be modified.' });
+  }
+
+  res.status(200).json({ Updated: users.find((user) => user.id === id) });
+});
+
+server.listen(7000, () => console.log(`SERVER RUNNING ON PORT 7000`));
