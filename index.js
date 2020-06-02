@@ -65,6 +65,7 @@ server.put('/api/users/:id', (req, res) => {
 
   if (foundUser) {
     users = users.map((user) => {
+      console.log('mapped user', user);
       if (user.id !== id) return user;
 
       return { ...user, ...req.body };
@@ -72,19 +73,19 @@ server.put('/api/users/:id', (req, res) => {
   }
 
   if (!foundUser) {
+    console.log('founduser', foundUser);
     return res.status(404).json({ message: 'the user with the specidied ID does not exist' });
   }
 
   if (!req.body.user || !req.body.bio) {
+    console.log('user', user + '::' + 'bio', bio);
     res.status(400).json({ errorMessage: 'Please provide name and bio and id for the user.' });
   }
 
-  function test() {
-    if (foundUser.user !== req.body.user || foundUser.bio !== req.body.bio) {
-      return res.status(500).json({ errorMessage: 'The user information could not be modified.' });
-    }
+  if (foundUser.user === req.body.user && foundUser.bio === req.body.bio) {
+    console.log('user found', foundUser.user === req.body.user, 'bio found', foundUser.bio === req.body.bio);
+    return res.status(500).json({ errorMessage: 'The user information could not be modified.' });
   }
-  setTimeout(test(), 5000);
 
   res.status(200).json({ Updated: users.find((user) => user.id === id) });
 });
