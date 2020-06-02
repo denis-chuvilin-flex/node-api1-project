@@ -71,7 +71,6 @@ server.put('/api/users/:id', (req, res) => {
     });
   }
 
-  console.log(req.body.user, req.body.bio);
   if (!foundUser) {
     return res.status(404).json({ message: 'the user with the specidied ID does not exist' });
   }
@@ -80,9 +79,12 @@ server.put('/api/users/:id', (req, res) => {
     res.status(400).json({ errorMessage: 'Please provide name and bio and id for the user.' });
   }
 
-  if (foundUser.user !== req.body.user || foundUser.bio !== req.body.bio) {
-    return res.status(500).json({ errorMessage: 'The user information could not be modified.' });
+  function test() {
+    if (foundUser.user !== req.body.user || foundUser.bio !== req.body.bio) {
+      return res.status(500).json({ errorMessage: 'The user information could not be modified.' });
+    }
   }
+  setTimeout(test(), 5000);
 
   res.status(200).json({ Updated: users.find((user) => user.id === id) });
 });
