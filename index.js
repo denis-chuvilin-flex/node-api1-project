@@ -52,14 +52,18 @@ server.get('/api/users', (req, res) => {
 server.delete('/api/users/:id', (req, res) => {
   let id = req.params.id;
   const user = users.find((user) => user.id == id);
-  res.status(200).json({ deleted: user });
+
   if (!user) {
     res.status(404).json({ message: 'The user with the specified ID does not exist.' });
   }
 
-  users.find((user) => {
-    if (user.id == id) return res.status(500).json({ errorMessage: 'The user could not be removed' });
-  });
+  res.status(200).json({ deleted: user });
+
+  try {
+    !user;
+  } catch (err) {
+    res.status(500).json({ errorMessage: 'The user could not be removed' });
+  }
 });
 
 server.put('/api/users/:id', (req, res) => {
