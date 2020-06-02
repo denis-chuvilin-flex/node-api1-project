@@ -21,7 +21,7 @@ let users = [
 ];
 
 server.post('/api/users/', (req, res) => {
-  if (!req.body.name || !req.body.bio) {
+  if (!req.body.user || !req.body.bio) {
     res.status(400).json({ errorMessage: 'Please provide name and bio for the user.' });
   }
 
@@ -51,11 +51,14 @@ server.get('/api/users', (req, res) => {
 
 server.delete('/api/users/:id', (req, res) => {
   let id = req.params.id;
-  res.status(200).json(users.find((user) => user.id == id));
-  !users.find((user) => {
-    user.id == id
-      ? res.status(404).json({ message: 'The user with the specified ID does not exist.' })
-      : res.status(500).json({ errorMessage: 'The user could not be removed' });
+  const user = users.find((user) => user.id == id);
+  res.status(200).json({ deleted: user });
+  if (!user) {
+    res.status(404).json({ message: 'The user with the specified ID does not exist.' });
+  }
+
+  users.find((user) => {
+    if (user.id == id) return res.status(500).json({ errorMessage: 'The user could not be removed' });
   });
 });
 
